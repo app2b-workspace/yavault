@@ -25,11 +25,11 @@ export const createStore = ({
   state: RootState;
   dependencies: Dependencies;
 }) => {
-  const actions: AnyAction[] = [];
-  const logActionsMiddleware: Middleware = () => next => action => {
-    actions.push(action);
-    return next(action);
-  };
+  let lastUseCaseAction: AnyAction;
+  const logLastUseCaseActionsMiddleware: Middleware =
+    () => next => (action: AnyAction) => {
+      return next(action);
+    };
   const store = configureStore({
     reducer: rootReducer,
     middleware: getDefaultMiddleware =>
@@ -37,10 +37,15 @@ export const createStore = ({
         thunk: {
           extraArgument: dependencies,
         },
-      }).prepend(logActionsMiddleware),
+      }).prepend(logLastUseCaseActionsMiddleware),
     preloadedState: state,
   });
-  return store;
+  return {
+    ...store,
+    getLastUseCaseAction() {
+      return lastUseCaseAction;
+    },
+  };
 };
 
 export type AppDispatch = ThunkDispatch<RootState, Dependencies, AnyAction>;

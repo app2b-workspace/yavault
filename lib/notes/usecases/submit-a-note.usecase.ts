@@ -19,7 +19,7 @@ export const willSubmitNote = createAction<WillSubmitNotePayload>(
   'notes/submitNoteDirty',
 );
 export const submitNote = createThunk(
-  'notes/submitNote',
+  'usecase/notes/submit',
   async (
     payload: SubmitNotePayload,
     {extra: {dateProvider, noteGateway}, dispatch, getState},

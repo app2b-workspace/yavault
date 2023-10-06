@@ -8,8 +8,8 @@ import {Folder} from '../models/folder.model';
 import {Note, PublishingStatus} from '../models/note.model';
 import {refreshFolder} from '../usecases/refresh-folder.usecase';
 import {submitNote} from '../usecases/submit-a-note.usecase';
-import {StoreBuilder} from '../../store/store.builder';
 import {AuthUser} from '../../auth/reducers/auth.reducer';
+import {createTestStore} from '../../store/create-test.store';
 
 type ExpectedFolder = {
   name: string;
@@ -27,16 +27,9 @@ export class NoteFixture {
   constructor(
     private stateBuilder: StateBuilder,
     private dateProvider = new FakeDateProviderAdapter(),
-    noteGateway = new FakeNoteGatewayAdapter(),
+    private noteGateway = new FakeNoteGatewayAdapter(),
     private folderGateway = new FakeFolderGatewayAdapter(),
-    private storeBuilder = new StoreBuilder(),
-  ) {
-    this.storeBuilder
-      .withDateProvider(dateProvider)
-      .withNoteGateway(noteGateway)
-      .withFolderGateway(folderGateway)
-      .withState(stateBuilder);
-  }
+  ) {}
 
   givenNowIs(now: Date) {
     this.dateProvider.nowIs = now;
@@ -67,7 +60,7 @@ export class NoteFixture {
     };
   }
   givenSubmittingNoteWillFail(error: string) {
-    this.storeBuilder.withNoteGateway(new FailingNoteGatewayAdapter(error));
+    this.noteGateway = new FailingNoteGatewayAdapter(error);
   }
   async whenSubmittingNote({
     noteId,
@@ -78,7 +71,10 @@ export class NoteFixture {
     content: string;
     folderId: string;
   }) {
-    this.store = this.storeBuilder.build();
+    this.store = createTestStore(this.stateBuilder.build(), {
+      noteGateway: this.noteGateway,
+      dateProvider: this.dateProvider,
+    });
     await this.store.dispatch(
       submitNote({
         noteId,
@@ -88,7 +84,9 @@ export class NoteFixture {
     );
   }
   async whenRefreshingFolder(folderId: string) {
-    this.store = this.storeBuilder.build();
+    this.store = createTestStore(this.stateBuilder.build(), {
+      folderGateway: this.folderGateway,
+    });
     return this.store.dispatch(refreshFolder({folderId}));
   }
   thenRootStateShouldBe(

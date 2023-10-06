@@ -5,7 +5,7 @@ interface RefreshFolderPayload {
   folderId: string;
 }
 export const refreshFolder = createThunk(
-  'folder/refreshFolder',
+  'usecase/folders/refresh',
   async (
     {folderId}: RefreshFolderPayload,
     {extra: {folderGateway}, getState},
