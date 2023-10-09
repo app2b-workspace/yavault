@@ -1,4 +1,4 @@
-interface NoteResponse {
+export interface NoteResponse {
   id: string;
   content: string;
   authorId: string;

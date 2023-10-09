@@ -28,6 +28,13 @@ export const createStore = ({
   let lastUseCaseAction: AnyAction;
   const logLastUseCaseActionsMiddleware: Middleware =
     () => next => (action: AnyAction) => {
+      if (
+        action.type &&
+        (action.type as string).startsWith('usecase') &&
+        (action.type as string).endsWith('pending')
+      ) {
+        lastUseCaseAction = action;
+      }
       return next(action);
     };
   const store = configureStore({

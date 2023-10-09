@@ -2,6 +2,7 @@ import {createSlice} from '@reduxjs/toolkit';
 import {Note, PublishingStatus, notesAdapter} from '../models/note.model';
 import {willSubmitNote, submitNote} from '../usecases/submit-a-note.usecase';
 import {refreshFolder} from '../usecases/refresh-folder.usecase';
+import {RootState} from '../../store/create.store';
 
 export const notesSlice = createSlice({
   name: 'notes',
@@ -39,7 +40,3 @@ export const notesSlice = createSlice({
       });
   },
 });
-/*
-export const selectNotesByTimeDesc = (state: RootState): Note[]=>{
-	return notesAdapter.getSelectors().selectAll(state.notes).sort((left, right)=> new Date(left.time).getTime() -  new Date(right.time).getTime())
-}*/
