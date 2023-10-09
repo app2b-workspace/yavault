@@ -6,113 +6,54 @@
  */
 
 import React from 'react';
-import type {PropsWithChildren} from 'react';
-import {
-  SafeAreaView,
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  useColorScheme,
-  View,
-} from 'react-native';
+import {SafeAreaView, StatusBar, useColorScheme} from 'react-native';
 
-import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
+import {Colors} from 'react-native/Libraries/NewAppScreen';
+import {createStore} from './lib/store/create.store';
+import {NativeDateProvider} from './lib/notes/adapters/date-now-provider.adapter';
+import {InMemoryFolderGatewayAdapter} from './lib/notes/adapters/inmemory-folder-gateway.adapter';
+import {FakeNoteGatewayAdapter} from './lib/notes/adapters/fake-note-gateway.adapter';
+import {StateBuilder} from './lib/store/state.builder';
+import {Provider} from 'react-redux';
+import {NotesByFolderScreen} from './screens/notes/notes-by-folder.screen';
 
-type SectionProps = PropsWithChildren<{
-  title: string;
-}>;
-
-function Section({children, title}: SectionProps): JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
-  return (
-    <View style={styles.sectionContainer}>
-      <Text
-        style={[
-          styles.sectionTitle,
-          {
-            color: isDarkMode ? Colors.white : Colors.black,
-          },
-        ]}>
-        {title}
-      </Text>
-      <Text
-        style={[
-          styles.sectionDescription,
-          {
-            color: isDarkMode ? Colors.light : Colors.dark,
-          },
-        ]}>
-        {children}
-      </Text>
-    </View>
-  );
-}
-
-function App(): JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
-
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
-  };
-
-  return (
-    <SafeAreaView style={backgroundStyle}>
-      <StatusBar
-        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-        backgroundColor={backgroundStyle.backgroundColor}
-      />
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyle}>
-        <Header />
-        <View
-          style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-          }}>
-          <Section title="Step One">
-            Edit <Text style={styles.highlight}>App.tsx</Text> to change this
-            screen and then come back to see your edits.
-          </Section>
-          <Section title="See Your Changes">
-            <ReloadInstructions />
-          </Section>
-          <Section title="Debug">
-            <DebugInstructions />
-          </Section>
-          <Section title="Learn More">
-            Read the docs to discover what to do next:
-          </Section>
-          <LearnMoreLinks />
-        </View>
-      </ScrollView>
-    </SafeAreaView>
-  );
-}
-
-const styles = StyleSheet.create({
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
-  },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
-  },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
-  },
-  highlight: {
-    fontWeight: '700',
+const store = createStore({
+  state: new StateBuilder().withFolder({id: 'inbox-id', name: 'INBOX'}).build(),
+  dependencies: {
+    dateProvider: new NativeDateProvider(),
+    folderGateway: new InMemoryFolderGatewayAdapter({
+      ['inbox-id']: [
+        {
+          authorId: 'audie-id',
+          content: 'Un message au hasard',
+          id: 'note-id1',
+          time: '2023-10-10T14:38:12.890Z',
+        },
+        {
+          authorId: 'audie-id',
+          content: 'Appeler la crèche',
+          id: 'note-id2',
+          time: '2023-10-10T13:38:12.890Z',
+        },
+        {
+          authorId: 'audie-id',
+          content: 'Appeler le ski',
+          id: 'note-id2',
+          time: '2023-10-10T12:38:12.890Z',
+        },
+      ],
+    }),
+    noteGateway: new FakeNoteGatewayAdapter(),
   },
 });
+
+function App(): JSX.Element {
+  return (
+    <Provider store={store}>
+      <StatusBar />
+      <NotesByFolderScreen currentFolderId="inbox-id" />
+    </Provider>
+  );
+}
 
 export default App;

@@ -11,12 +11,24 @@ export class StateBuilder {
     };
     return this;
   }
-  withFolder({id, name}: {id: string; name: string}): StateBuilder {
+  withFolder({
+    id,
+    name,
+    isLoading = false,
+  }: {
+    id: string;
+    name: string;
+    isLoading: boolean;
+  }): StateBuilder {
     this.state = {
       ...this.state,
       folders: {
         ...this.state.folders,
         ...foldersAdapter.setOne(this.state.folders, {id, name, notes: []}),
+        loading: {
+          ...this.state.folders.loading,
+          [id]: isLoading,
+        },
       },
     };
     return this;

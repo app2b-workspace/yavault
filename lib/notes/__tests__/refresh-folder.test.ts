@@ -20,15 +20,15 @@ describe('Feature : Refreshing notes', () => {
     noteFixture.givenExistingFolder(aFolder('inbox-id', 'INBOX').build());
     noteFixture.givenRemoteNotes('inbox-id', [
       {
-        id: 'note-id',
+        id: 'note-id1',
         authorId: 'bob-id',
         content: 'buy ananas',
         time: new Date('2023-10-31T06:30:00.000Z'),
       },
       {
-        id: 'note-id',
+        id: 'note-id2',
         authorId: 'bob-id',
-        content: 'buy ananas',
+        content: 'buy strawberry',
         time: new Date('2023-11-20T05:30:00.000Z'),
       },
     ]);
@@ -40,16 +40,16 @@ describe('Feature : Refreshing notes', () => {
         name: 'INBOX',
         notes: [
           {
-            id: 'note-id',
+            id: 'note-id1',
             authorId: 'bob-id',
             content: 'buy ananas',
             time: '2023-10-31T06:30:00.000Z',
             status: PublishingStatus.Submitted,
           },
           {
-            id: 'note-id',
+            id: 'note-id2',
             authorId: 'bob-id',
-            content: 'buy ananas',
+            content: 'buy strawberry',
             time: '2023-11-20T05:30:00.000Z',
             status: PublishingStatus.Submitted,
           },
@@ -58,7 +58,7 @@ describe('Feature : Refreshing notes', () => {
     );
   });
 
-  test('Example: There is one stored note and Bob new notes', async () => {
+  test('Example: There is one stored note and Bob pull new notes', async () => {
     authFixture.givenAuthenticatedUser({id: 'bob-id'});
     noteFixture.givenExistingFolder(aFolder('inbox-id', 'INBOX').build());
     noteFixture.givenExistingNotes({
@@ -112,6 +112,47 @@ describe('Feature : Refreshing notes', () => {
             authorId: 'bob-id',
             content: 'call the lawyer',
             time: '2023-11-20T05:30:00.000Z',
+            status: PublishingStatus.Submitted,
+          },
+        ],
+      },
+    );
+  });
+
+  test('Example: There is one note and Bob pull changes on that note', async () => {
+    authFixture.givenAuthenticatedUser({id: 'bob-id'});
+    noteFixture.givenExistingFolder(aFolder('inbox-id', 'INBOX').build());
+    noteFixture.givenExistingNotes({
+      folderId: 'inbox-id',
+      notes: [
+        aNote('note-id1')
+          .withTime(new Date('2023-09-20T05:30:00.000Z'))
+          .withContent('send email to Foo')
+          .withAuthorId('bob-id')
+          .withStatus(PublishingStatus.Submitted)
+          .build(),
+      ],
+    });
+    noteFixture.givenRemoteNotes('inbox-id', [
+      {
+        id: 'note-id1',
+        authorId: 'bob-id',
+        content: 'send email to Foo and dont forget the tennis',
+        time: new Date('2023-11-30T06:30:00.000Z'),
+      },
+    ]);
+    await noteFixture.whenRefreshingFolder('inbox-id');
+    noteFixture.thenRootStateShouldBe(
+      {id: 'bob-id'},
+      {
+        id: 'inbox-id',
+        name: 'INBOX',
+        notes: [
+          {
+            id: 'note-id1',
+            authorId: 'bob-id',
+            content: 'send email to Foo and dont forget the tennis',
+            time: '2023-11-30T06:30:00.000Z',
             status: PublishingStatus.Submitted,
           },
         ],

@@ -29,14 +29,14 @@ export const notesSlice = createSlice({
       })
       .addCase(refreshFolder.fulfilled, (state, action) => {
         const response = action.payload;
-        const notes: Note[] = response.notes.map(noteResponse => ({
+        const willRefreshNotes: Note[] = response.notes.map(noteResponse => ({
           id: noteResponse.id,
           content: noteResponse.content,
           time: noteResponse.time,
           authorId: noteResponse.authorId,
           status: PublishingStatus.Submitted,
         }));
-        notesAdapter.addMany(state, notes);
+        notesAdapter.upsertMany(state, willRefreshNotes);
       });
   },
 });
