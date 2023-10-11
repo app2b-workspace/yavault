@@ -33,7 +33,7 @@ describe('Feature : Submit a note', () => {
             authorId: 'bob-id',
             content: 'buy ananas',
             time: '2023-10-31T06:30:00.000Z',
-            status: PublishingStatus.Submitted,
+            status: PublishingStatus.Runnning,
           },
         ],
       },
@@ -43,7 +43,7 @@ describe('Feature : Submit a note', () => {
     authFixture.givenAuthenticatedUser({id: 'bob-id'});
     noteFixture.givenNowIs(new Date('2023-10-31T06:30:00.000Z'));
     noteFixture.givenExistingFolder(aFolder('inbox-id', 'INBOX').build());
-    noteFixture.givenSubmittingNoteWillFail('Submit note fails');
+    noteFixture.givenNoteWillFail('Submit note fails');
     await noteFixture.whenSubmittingNote({
       noteId: 'note-id',
       content: 'buy ananas',

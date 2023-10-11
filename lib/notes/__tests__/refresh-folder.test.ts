@@ -44,14 +44,14 @@ describe('Feature : Refreshing notes', () => {
             authorId: 'bob-id',
             content: 'buy ananas',
             time: '2023-10-31T06:30:00.000Z',
-            status: PublishingStatus.Submitted,
+            status: PublishingStatus.Runnning,
           },
           {
             id: 'note-id2',
             authorId: 'bob-id',
             content: 'buy strawberry',
             time: '2023-11-20T05:30:00.000Z',
-            status: PublishingStatus.Submitted,
+            status: PublishingStatus.Runnning,
           },
         ],
       },
@@ -105,14 +105,14 @@ describe('Feature : Refreshing notes', () => {
             authorId: 'bob-id',
             content: 'buy ananas',
             time: '2023-10-31T06:30:00.000Z',
-            status: PublishingStatus.Submitted,
+            status: PublishingStatus.Runnning,
           },
           {
             id: 'note-id2',
             authorId: 'bob-id',
             content: 'call the lawyer',
             time: '2023-11-20T05:30:00.000Z',
-            status: PublishingStatus.Submitted,
+            status: PublishingStatus.Runnning,
           },
         ],
       },
@@ -129,7 +129,7 @@ describe('Feature : Refreshing notes', () => {
           .withTime(new Date('2023-09-20T05:30:00.000Z'))
           .withContent('send email to Foo')
           .withAuthorId('bob-id')
-          .withStatus(PublishingStatus.Submitted)
+          .withStatus(PublishingStatus.Runnning)
           .build(),
       ],
     });
@@ -153,7 +153,7 @@ describe('Feature : Refreshing notes', () => {
             authorId: 'bob-id',
             content: 'send email to Foo and dont forget the tennis',
             time: '2023-11-30T06:30:00.000Z',
-            status: PublishingStatus.Submitted,
+            status: PublishingStatus.Runnning,
           },
         ],
       },

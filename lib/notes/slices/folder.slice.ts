@@ -5,6 +5,7 @@ import {refreshFolder} from '../usecases/refresh-folder.usecase';
 import {Note, notesAdapter} from '../models/note.model';
 import {RootState} from '../../store/create.store';
 import {isDefinedOrNotNullGuard} from '../../common/is-defined-or-not-null.guard';
+import {completeNote} from '../usecases/complete-a-note.usecase';
 
 type FolderState = EntityState<Folder> & {
   loading: {[folderId: string]: boolean};
@@ -56,11 +57,27 @@ export const foldersSlice = createSlice({
           },
         });
       });
+    /*.addCase(completeNote.fulfilled, (state, action) => {
+        const folder = foldersAdapter
+          .getSelectors()
+          .selectById(state, action.meta.arg.folderId);
+        if (!folder) {
+          return;
+        }
+        foldersAdapter.updateOne(state, {
+          id: action.meta.arg.folderId,
+          changes: {
+            notes: folder.notes.filter(
+              noteId => noteId !== action.meta.arg.noteId,
+            ),
+          },
+        });
+      });*/
   },
 });
 const EMPTY_NOTE_ARRAY: Note[] = [];
 
-export const selectNotesByFolderByTimeDesc = createSelector(
+export const selectNotesByFolder = createSelector(
   [
     (state: RootState) => state,
     (state: RootState, folderId: string) => {
@@ -81,11 +98,7 @@ export const selectNotesByFolderByTimeDesc = createSelector(
           .selectById(state.notes, noteId);
         return note;
       })
-      .filter(isDefinedOrNotNullGuard)
-      .sort(
-        (left, right) =>
-          new Date(right.time).getTime() - new Date(left.time).getTime(),
-      );
+      .filter(isDefinedOrNotNullGuard);
   },
 );
 

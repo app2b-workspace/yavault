@@ -1,5 +1,6 @@
-import {createSlice} from '@reduxjs/toolkit';
+import {createSlice, isAnyOf} from '@reduxjs/toolkit';
 import {submitNote} from '../usecases/submit-a-note.usecase';
+import {completeNote} from '../usecases/complete-a-note.usecase';
 
 type NotesFailureState = {[noteId: string]: string};
 export const notesFailureSlice = createSlice({
@@ -7,8 +8,11 @@ export const notesFailureSlice = createSlice({
   initialState: {} as NotesFailureState,
   reducers: {},
   extraReducers(builder) {
-    builder.addCase(submitNote.rejected, (state, action) => {
-      state[action.meta.arg.noteId] = action.error.message as string;
-    });
+    builder.addMatcher(
+      isAnyOf(submitNote.rejected, completeNote.rejected),
+      (state, action) => {
+        state[action.meta.arg.noteId] = action.error.message as string;
+      },
+    );
   },
 });

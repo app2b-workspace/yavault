@@ -2,7 +2,8 @@ import {createEntityAdapter} from '@reduxjs/toolkit';
 
 export enum PublishingStatus {
   Dirty,
-  Submitted,
+  Runnning,
+  Completed,
 }
 export interface Note {
   id: string;

@@ -18,7 +18,7 @@ export class StateBuilder {
   }: {
     id: string;
     name: string;
-    isLoading: boolean;
+    isLoading?: boolean;
   }): StateBuilder {
     this.state = {
       ...this.state,

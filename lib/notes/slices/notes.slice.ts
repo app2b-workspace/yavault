@@ -1,12 +1,17 @@
-import {createSlice} from '@reduxjs/toolkit';
+import {EntityState, createSlice, isAnyOf} from '@reduxjs/toolkit';
 import {Note, PublishingStatus, notesAdapter} from '../models/note.model';
 import {willSubmitNote, submitNote} from '../usecases/submit-a-note.usecase';
 import {refreshFolder} from '../usecases/refresh-folder.usecase';
-import {RootState} from '../../store/create.store';
+import {
+  completeNote,
+  completeNotePending,
+} from '../usecases/complete-a-note.usecase';
+
+type NoteState = EntityState<Note>;
 
 export const notesSlice = createSlice({
   name: 'notes',
-  initialState: notesAdapter.getInitialState(),
+  initialState: notesAdapter.getInitialState() as NoteState,
   reducers: {},
   extraReducers(builder) {
     builder
@@ -23,7 +28,7 @@ export const notesSlice = createSlice({
         notesAdapter.updateOne(state, {
           id: action.meta.arg.noteId,
           changes: {
-            status: PublishingStatus.Submitted,
+            status: PublishingStatus.Runnning,
           },
         });
       })
@@ -34,9 +39,33 @@ export const notesSlice = createSlice({
           content: noteResponse.content,
           time: noteResponse.time,
           authorId: noteResponse.authorId,
-          status: PublishingStatus.Submitted,
+          status: PublishingStatus.Runnning,
         }));
         notesAdapter.upsertMany(state, willRefreshNotes);
+      })
+      .addCase(completeNote.fulfilled, (state, action) => {
+        notesAdapter.updateOne(state, {
+          id: action.meta.arg.noteId,
+          changes: {
+            status: PublishingStatus.Completed,
+          },
+        });
+      })
+      .addCase(completeNotePending, (state, action) => {
+        notesAdapter.updateOne(state, {
+          id: action.payload.id,
+          changes: {
+            time: action.payload.at,
+          },
+        });
+      })
+      .addMatcher(isAnyOf(completeNote.rejected), (state, action) => {
+        notesAdapter.updateOne(state, {
+          id: action.meta.arg.noteId,
+          changes: {
+            status: PublishingStatus.Dirty,
+          },
+        });
       });
   },
 });

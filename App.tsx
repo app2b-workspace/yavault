@@ -21,28 +21,31 @@ const store = createStore({
   state: new StateBuilder().withFolder({id: 'inbox-id', name: 'INBOX'}).build(),
   dependencies: {
     dateProvider: new NativeDateProvider(),
-    folderGateway: new InMemoryFolderGatewayAdapter({
-      ['inbox-id']: [
-        {
-          authorId: 'audie-id',
-          content: 'Un message au hasard',
-          id: 'note-id1',
-          time: '2023-10-10T14:38:12.890Z',
-        },
-        {
-          authorId: 'audie-id',
-          content: 'Appeler la crèche',
-          id: 'note-id2',
-          time: '2023-10-10T13:38:12.890Z',
-        },
-        {
-          authorId: 'audie-id',
-          content: 'Appeler le ski',
-          id: 'note-id2',
-          time: '2023-10-10T12:38:12.890Z',
-        },
-      ],
-    }),
+    folderGateway: new InMemoryFolderGatewayAdapter(
+      {
+        ['inbox-id']: [
+          {
+            authorId: 'audie-id',
+            content: 'Un message au hasard',
+            id: 'note-id1',
+            time: '2023-10-10T14:38:12.890Z',
+          },
+          {
+            authorId: 'audie-id',
+            content: 'Appeler la crèche',
+            id: 'note-id2',
+            time: '2023-10-10T13:38:12.890Z',
+          },
+          {
+            authorId: 'audie-id',
+            content: 'Appeler le ski',
+            id: 'note-id2',
+            time: '2023-10-10T12:38:12.890Z',
+          },
+        ],
+      },
+      {timeoutMax: 600},
+    ),
     noteGateway: new FakeNoteGatewayAdapter(),
   },
 });

@@ -7,4 +7,9 @@ export interface SubmitNoteParams {
 }
 export interface NoteGateway {
   submit(params: SubmitNoteParams): Promise<void>;
+  complete(params: {
+    authorId: string;
+    noteId: string;
+    folderId: string;
+  }): Promise<void>;
 }

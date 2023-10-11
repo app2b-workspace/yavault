@@ -3,15 +3,9 @@ import {
   NoteViewModel,
   useNotesByFolderViewModel,
 } from './notes-by-folder.viewmodel';
-import {
-  FlatList,
-  RefreshControl,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import {FlatList, RefreshControl, StyleSheet, View} from 'react-native';
 import {Header} from '../../components/header.component';
+import {NoteItem} from '../../components/note-item.component';
 
 interface Props {
   currentFolderId: string;
@@ -19,12 +13,12 @@ interface Props {
 export const NotesByFolderScreen = ({currentFolderId}: Props) => {
   const viewModel = useNotesByFolderViewModel(currentFolderId);
   const renderItem = ({item}: {item: NoteViewModel}) => (
-    <TouchableOpacity style={styles.noteItem}>
-      <View>
-        <Text style={styles.content}>{item.content}</Text>
-        <Text style={styles.time}>{item.time}</Text>
-      </View>
-    </TouchableOpacity>
+    <NoteItem
+      content={item.content}
+      hasCompleted={item.hasCompleted()}
+      complete={item.complete}
+      time={item.time}
+    />
   );
 
   useEffect(() => {
@@ -51,19 +45,4 @@ export const NotesByFolderScreen = ({currentFolderId}: Props) => {
 
 const styles = StyleSheet.create({
   container: {flex: 1, padding: 16, backgroundColor: '#f2f2f2'},
-  content: {
-    fontSize: 14,
-    marginBottom: 4,
-    color: '#555555',
-  },
-  time: {
-    fontSize: 12,
-    color: '#888888',
-  },
-  noteItem: {
-    backgroundColor: '#ffffff',
-    borderRadius: 8,
-    marginBottom: 12,
-    padding: 16,
-  },
 });

@@ -10,6 +10,7 @@ import {refreshFolder} from '../usecases/refresh-folder.usecase';
 import {submitNote} from '../usecases/submit-a-note.usecase';
 import {AuthUser} from '../../auth/reducers/auth.reducer';
 import {createTestStore} from '../../store/create-test.store';
+import {completeNote} from '../usecases/complete-a-note.usecase';
 
 type ExpectedFolder = {
   name: string;
@@ -35,7 +36,7 @@ export class NoteFixture {
     this.dateProvider.nowIs = now;
   }
   givenExistingFolder(folder: Folder) {
-    this.stateBuilder.withFolder(folder);
+    this.stateBuilder.withFolder({id: folder.id, name: folder.name});
   }
   givenExistingNotes({folderId, notes}: {folderId: string; notes: Note[]}) {
     this.stateBuilder.withNotes(folderId, notes);
@@ -59,7 +60,7 @@ export class NoteFixture {
       })),
     };
   }
-  givenSubmittingNoteWillFail(error: string) {
+  givenNoteWillFail(error: string) {
     this.noteGateway = new FailingNoteGatewayAdapter(error);
   }
   async whenSubmittingNote({
@@ -79,6 +80,24 @@ export class NoteFixture {
       submitNote({
         noteId,
         content,
+        folderId,
+      }),
+    );
+  }
+  async whenCompletingNote({
+    noteId,
+    folderId,
+  }: {
+    noteId: string;
+    folderId: string;
+  }) {
+    this.store = createTestStore(this.stateBuilder.build(), {
+      noteGateway: this.noteGateway,
+      dateProvider: this.dateProvider,
+    });
+    return this.store.dispatch(
+      completeNote({
+        noteId,
         folderId,
       }),
     );
