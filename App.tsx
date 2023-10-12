@@ -6,9 +6,8 @@
  */
 
 import React from 'react';
-import {SafeAreaView, StatusBar, useColorScheme} from 'react-native';
+import {StatusBar} from 'react-native';
 
-import {Colors} from 'react-native/Libraries/NewAppScreen';
 import {createStore} from './lib/store/create.store';
 import {NativeDateProvider} from './lib/notes/adapters/date-now-provider.adapter';
 import {InMemoryFolderGatewayAdapter} from './lib/notes/adapters/inmemory-folder-gateway.adapter';
@@ -16,6 +15,7 @@ import {FakeNoteGatewayAdapter} from './lib/notes/adapters/fake-note-gateway.ada
 import {StateBuilder} from './lib/store/state.builder';
 import {Provider} from 'react-redux';
 import {NotesByFolderScreen} from './screens/notes/notes-by-folder.screen';
+import {GestureHandlerRootView} from 'react-native-gesture-handler';
 
 const store = createStore({
   state: new StateBuilder().withFolder({id: 'inbox-id', name: 'INBOX'}).build(),
@@ -44,7 +44,7 @@ const store = createStore({
           },
         ],
       },
-      {timeoutMax: 600},
+      {timeoutMax: 800},
     ),
     noteGateway: new FakeNoteGatewayAdapter(),
   },
@@ -52,10 +52,12 @@ const store = createStore({
 
 function App(): JSX.Element {
   return (
-    <Provider store={store}>
-      <StatusBar />
-      <NotesByFolderScreen currentFolderId="inbox-id" />
-    </Provider>
+    <GestureHandlerRootView style={{flex: 1}}>
+      <Provider store={store}>
+        <StatusBar />
+        <NotesByFolderScreen currentFolderId="inbox-id" />
+      </Provider>
+    </GestureHandlerRootView>
   );
 }
 

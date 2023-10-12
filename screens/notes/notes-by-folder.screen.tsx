@@ -1,48 +1,48 @@
-import React, {useEffect} from 'react';
-import {
-  NoteViewModel,
-  useNotesByFolderViewModel,
-} from './notes-by-folder.viewmodel';
-import {FlatList, RefreshControl, StyleSheet, View} from 'react-native';
+import React, {useCallback, useEffect, useState} from 'react';
+import {useNotesByFolderViewModel} from './notes-by-folder.viewmodel';
+import {StyleSheet, View} from 'react-native';
+import {NoteList} from '../../components/note-list.component';
 import {Header} from '../../components/header.component';
-import {NoteItem} from '../../components/note-item.component';
 
+import {SubmitNoteForm} from '../../components/submit-note-form.component';
 interface Props {
   currentFolderId: string;
 }
-export const NotesByFolderScreen = ({currentFolderId}: Props) => {
-  const viewModel = useNotesByFolderViewModel(currentFolderId);
-  const renderItem = ({item}: {item: NoteViewModel}) => (
-    <NoteItem
-      content={item.content}
-      hasCompleted={item.hasCompleted()}
-      complete={item.complete}
-      time={item.time}
-    />
-  );
 
+export const NotesByFolderScreen = ({currentFolderId}: Props) => {
+  const [isSubmitNoteFormVisible, setSubmitNoteFormVisible] = useState(false);
+
+  const viewModel = useNotesByFolderViewModel(currentFolderId);
   useEffect(() => {
     viewModel.refresh();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const openAddNoteFormCallback = useCallback(() => {
+    setSubmitNoteFormVisible(true);
+  }, []);
+  const closeAddNoteFormCallback = useCallback(() => {
+    setSubmitNoteFormVisible(false);
+  }, []);
   return (
     <View style={styles.container}>
-      <Header title={'INBOX'} />
-      <FlatList
-        refreshControl={
-          <RefreshControl
-            refreshing={viewModel.isLoading}
-            onRefresh={viewModel.refresh}
-          />
-        }
-        data={viewModel.notes}
-        keyExtractor={item => item.id.toString()}
-        renderItem={renderItem}
+      <Header title={'INBOX'} onNewNote={openAddNoteFormCallback} />
+      <NoteList
+        folderName="INBOX"
+        isLoading={viewModel.isLoading}
+        notes={viewModel.notes}
+        refresh={viewModel.refresh}
+      />
+      <SubmitNoteForm
+        noteContentPlaceholder="Que souhaitez-vous accomplir ?"
+        noteSubmitLabel="SUBMIT"
+        visible={isSubmitNoteFormVisible}
+        onClose={closeAddNoteFormCallback}
       />
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {flex: 1, padding: 16, backgroundColor: '#f2f2f2'},
+  container: {flex: 1, backgroundColor: '#ffffff'},
 });
