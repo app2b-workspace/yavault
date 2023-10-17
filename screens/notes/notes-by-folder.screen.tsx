@@ -1,28 +1,36 @@
-import React, {useCallback, useEffect, useState} from 'react';
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import {useNotesByFolderViewModel} from './notes-by-folder.viewmodel';
 import {StyleSheet, View} from 'react-native';
 import {NoteList} from '../../components/note-list.component';
 import {Header} from '../../components/header.component';
 
-import {SubmitNoteForm} from '../../components/submit-note-form.component';
+import {
+  SubmitNoteForm,
+  SubmitNoteFormMethods,
+} from '../../components/submit-note-form.component';
+import {DependenciesContext} from '../../context/dependencies.context';
 interface Props {
   currentFolderId: string;
 }
 
 export const NotesByFolderScreen = ({currentFolderId}: Props) => {
-  const [isSubmitNoteFormVisible, setSubmitNoteFormVisible] = useState(false);
+  const submitFormRef = useRef<SubmitNoteFormMethods>(null);
 
-  const viewModel = useNotesByFolderViewModel(currentFolderId);
+  const dependencies = useContext(DependenciesContext);
+  const viewModel = useNotesByFolderViewModel(currentFolderId, dependencies);
   useEffect(() => {
     viewModel.refresh();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const openAddNoteFormCallback = useCallback(() => {
-    setSubmitNoteFormVisible(true);
-  }, []);
-  const closeAddNoteFormCallback = useCallback(() => {
-    setSubmitNoteFormVisible(false);
+    submitFormRef.current?.expand();
   }, []);
   return (
     <View style={styles.container}>
@@ -36,8 +44,7 @@ export const NotesByFolderScreen = ({currentFolderId}: Props) => {
       <SubmitNoteForm
         noteContentPlaceholder="Que souhaitez-vous accomplir ?"
         noteSubmitLabel="SUBMIT"
-        visible={isSubmitNoteFormVisible}
-        onClose={closeAddNoteFormCallback}
+        ref={submitFormRef}
       />
     </View>
   );

@@ -1,94 +1,85 @@
-import React, {useCallback, useEffect, useMemo, useRef} from 'react';
+import React, {
+  forwardRef,
+  useCallback,
+  useImperativeHandle,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import BottomSheet, {
+  BottomSheetBackdrop,
   BottomSheetBackdropProps,
   BottomSheetTextInput,
 } from '@gorhom/bottom-sheet';
 import {StyleSheet, View} from 'react-native';
 import {Button} from './button.component';
-import {
-  Extrapolate,
-  interpolate,
-  useAnimatedStyle,
-} from 'react-native-reanimated';
-import {hexToRGBA} from '../lib/common/hexa.utils';
-
-import Animated from 'react-native-reanimated';
 
 interface Props {
   noteContentPlaceholder: string;
   noteSubmitLabel: string;
-  visible?: boolean | undefined;
-  onClose: () => void;
 }
 
-const CustomBackdrop = ({animatedIndex, style}: BottomSheetBackdropProps) => {
-  const containerAnimatedStyle = useAnimatedStyle(() => ({
-    opacity: interpolate(
-      animatedIndex.value,
-      [0, 1],
-      [0, 1],
-      Extrapolate.CLAMP,
-    ),
-  }));
+export interface SubmitNoteFormMethods {
+  expand: () => void;
+}
 
-  const containerStyle = useMemo(
-    () => [
-      style,
-      {
-        backgroundColor: hexToRGBA('#b56d3f', 0.8),
-      },
-      containerAnimatedStyle,
-    ],
-    [style, containerAnimatedStyle],
-  );
+const EXPANDED_INDEX = 1;
+const CLOSED_INDEX = -1;
 
-  return <Animated.View style={containerStyle} />;
-};
-export const SubmitNoteForm = ({
-  visible = false,
-  onClose,
-  noteContentPlaceholder,
-  noteSubmitLabel,
-}: Props) => {
-  const bottomSheetRef = useRef<BottomSheet>(null);
-  const snapPoints = useMemo(() => ['25%', '80%'], []);
+export const SubmitNoteForm = forwardRef(
+  (
+    {noteContentPlaceholder, noteSubmitLabel}: Props,
+    ref: React.Ref<SubmitNoteFormMethods>,
+  ) => {
+    const bottomSheetRef = useRef<BottomSheet>(null);
+    const snapPoints = useMemo(() => ['25%', '80%'], []);
+    const [index, setIndex] = useState<number>(CLOSED_INDEX);
 
-  const backdropComponent = useCallback(
-    (props: BottomSheetBackdropProps) => {
-      return visible ? <CustomBackdrop {...props} /> : null;
-    },
-    [visible],
-  );
-  useEffect(() => {
-    if (visible) {
-      bottomSheetRef.current?.expand();
-    } else if (bottomSheetRef.current) {
-      bottomSheetRef.current.close();
-    }
-  }, [visible]);
-  console.log('visible', visible);
-
-  return (
-    <BottomSheet
-      ref={bottomSheetRef}
-      backdropComponent={backdropComponent}
-      backgroundStyle={styles.bottomSheetContent}
-      keyboardBehavior="extend"
-      enablePanDownToClose={true}
-      onClose={onClose}
-      snapPoints={snapPoints}>
-      <View style={styles.bottomSheetInputContent}>
-        <BottomSheetTextInput
-          style={styles.input}
-          placeholder={noteContentPlaceholder}
-          maxLength={40}
-          placeholderTextColor={'#C38A65'}
+    const backdropComponent = useCallback((props: BottomSheetBackdropProps) => {
+      return (
+        <BottomSheetBackdrop
+          {...props}
+          appearsOnIndex={EXPANDED_INDEX}
+          disappearsOnIndex={CLOSED_INDEX}
+          pressBehavior={'close'}
+          opacity={0.8}
         />
-        <Button label={noteSubmitLabel} />
-      </View>
-    </BottomSheet>
-  );
-};
+      );
+    }, []);
+
+    useImperativeHandle(ref, () => {
+      return {
+        expand() {
+          bottomSheetRef.current?.expand();
+        },
+      };
+    });
+
+    return (
+      <BottomSheet
+        ref={bottomSheetRef}
+        backdropComponent={backdropComponent}
+        backgroundStyle={styles.bottomSheetContent}
+        keyboardBehavior="extend"
+        index={index}
+        enablePanDownToClose={true}
+        onChange={(i: number) => {
+          setIndex(i);
+        }}
+        snapPoints={snapPoints}>
+        <View style={styles.bottomSheetInputContent}>
+          <BottomSheetTextInput
+            style={styles.input}
+            placeholder={noteContentPlaceholder}
+            maxLength={40}
+            placeholderTextColor={'#C38A65'}
+          />
+          <Button label={noteSubmitLabel} />
+        </View>
+      </BottomSheet>
+    );
+  },
+);
 
 const styles = StyleSheet.create({
   input: {
