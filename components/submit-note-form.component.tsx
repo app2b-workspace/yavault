@@ -66,7 +66,6 @@ export const SubmitNoteForm = ({
       bottomSheetRef.current.close();
     }
   }, [visible]);
-  console.log('visible', visible);
 
   return (
     <BottomSheet

@@ -1,10 +1,11 @@
-import React, {useCallback, useEffect, useState} from 'react';
+import React, {useCallback, useContext, useEffect, useState} from 'react';
 import {useNotesByFolderViewModel} from './notes-by-folder.viewmodel';
 import {StyleSheet, View} from 'react-native';
 import {NoteList} from '../../components/note-list.component';
 import {Header} from '../../components/header.component';
 
 import {SubmitNoteForm} from '../../components/submit-note-form.component';
+import {DependenciesContext} from '../../context/dependencies.context';
 interface Props {
   currentFolderId: string;
 }
@@ -12,7 +13,8 @@ interface Props {
 export const NotesByFolderScreen = ({currentFolderId}: Props) => {
   const [isSubmitNoteFormVisible, setSubmitNoteFormVisible] = useState(false);
 
-  const viewModel = useNotesByFolderViewModel(currentFolderId);
+  const dependencies = useContext(DependenciesContext);
+  const viewModel = useNotesByFolderViewModel(currentFolderId, dependencies);
   useEffect(() => {
     viewModel.refresh();
     // eslint-disable-next-line react-hooks/exhaustive-deps
