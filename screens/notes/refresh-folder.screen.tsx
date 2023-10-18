@@ -43,7 +43,8 @@ export const RefreshFolderScreen = ({currentFolderId}: Props) => {
       />
       <SubmitNoteForm
         noteContentPlaceholder="Que souhaitez-vous accomplir ?"
-        noteSubmitLabel="SUBMIT"
+        noteSubmitLabel="AJOUTER"
+        folderId={currentFolderId}
         ref={submitFormRef}
       />
     </View>

@@ -1,6 +1,7 @@
 import React, {
   forwardRef,
   useCallback,
+  useContext,
   useImperativeHandle,
   useMemo,
   useRef,
@@ -13,8 +14,12 @@ import BottomSheet, {
 } from '@gorhom/bottom-sheet';
 import {StyleSheet, View} from 'react-native';
 import {Button} from './button.component';
+import {useSubmitNoteViewModel} from './submit-note.viewmodel';
+import {DependenciesContext} from '../context/dependencies.context';
+import {TextInput} from 'react-native';
 
 interface Props {
+  folderId: string;
   noteContentPlaceholder: string;
   noteSubmitLabel: string;
 }
@@ -28,10 +33,13 @@ const CLOSED_INDEX = -1;
 
 export const SubmitNoteForm = forwardRef(
   (
-    {noteContentPlaceholder, noteSubmitLabel}: Props,
+    {folderId, noteContentPlaceholder, noteSubmitLabel}: Props,
     ref: React.Ref<SubmitNoteFormMethods>,
   ) => {
+    const dependencies = useContext(DependenciesContext);
+    const viewModel = useSubmitNoteViewModel(folderId, dependencies);
     const bottomSheetRef = useRef<BottomSheet>(null);
+    const contentInputRef = useRef<BottomSheetTextInput>(null);
     const snapPoints = useMemo(() => ['25%', '80%'], []);
     const [index, setIndex] = useState<number>(CLOSED_INDEX);
 
@@ -54,6 +62,12 @@ export const SubmitNoteForm = forwardRef(
         },
       };
     });
+    const submit = useCallback(() => {
+      return viewModel.submit()?.finally(() => {
+        contentInputRef.current?.clear();
+        bottomSheetRef.current?.close();
+      });
+    }, [viewModel, contentInputRef]);
 
     return (
       <BottomSheet
@@ -69,12 +83,18 @@ export const SubmitNoteForm = forwardRef(
         snapPoints={snapPoints}>
         <View style={styles.bottomSheetInputContent}>
           <BottomSheetTextInput
+            ref={contentInputRef}
             style={styles.input}
             placeholder={noteContentPlaceholder}
             maxLength={40}
             placeholderTextColor={'#C38A65'}
+            onChangeText={(content: string) => viewModel.newContent(content)}
           />
-          <Button label={noteSubmitLabel} />
+          <Button
+            disabled={!viewModel.canSubmit}
+            label={noteSubmitLabel}
+            onPress={submit}
+          />
         </View>
       </BottomSheet>
     );

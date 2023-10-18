@@ -9,11 +9,13 @@ import {rootReducer} from './root.reducer';
 import {DateProvider} from '../notes/models/date.provider';
 import {NoteGateway} from '../notes/models/note.gateway';
 import {FolderGateway} from '../notes/models/folder.gateway';
+import {IdGenerator} from '../notes/models/id.generator';
 
 export interface Dependencies {
   dateProvider: DateProvider;
   noteGateway: NoteGateway;
   folderGateway: FolderGateway;
+  idGenerator: IdGenerator;
 }
 export const initialState = rootReducer(undefined, createAction(''));
 export type RootState = typeof initialState;

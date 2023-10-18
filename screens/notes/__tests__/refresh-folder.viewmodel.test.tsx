@@ -1,10 +1,6 @@
 import {PublishingStatus} from '../../../lib/notes/models/note.model';
 import {aState} from '../../../lib/store/state.builder';
-import {
-  NoteViewModel,
-  RefreshFolderViewModel,
-  useRefreshFolderViewModel,
-} from '../refresh-folder.viewmodel';
+import {useRefreshFolderViewModel} from '../refresh-folder.viewmodel';
 import {createTestStore} from '../../../lib/store/create-test.store';
 import {FakeFolderGatewayAdapter} from '../../../lib/notes/adapters/fake-folder-gateway.adapter';
 import {act} from 'react-test-renderer';
@@ -14,29 +10,15 @@ import {
   renderViewModelHook,
   wrapperWithReduxStore,
 } from '../../../components/__tests__/viewmodel.fixture';
-
-const createNoteView = ({
-  authorId,
-  content,
-  id,
-  time,
-}: {
-  id: string;
-  authorId: string;
-  content: string;
-  time: string;
-}): Partial<NoteViewModel> => ({
-  authorId,
-  content,
-  id,
-  time,
-});
+import {NoteViewModelFixture, createNoteViewModelFixture} from './note.fixture';
 
 let folderGateway: FakeFolderGatewayAdapter;
 let dateProvider: FakeDateProviderAdapter;
+let noteViewModelFixture: NoteViewModelFixture;
 beforeEach(() => {
   folderGateway = new FakeFolderGatewayAdapter();
   dateProvider = new FakeDateProviderAdapter();
+  noteViewModelFixture = createNoteViewModelFixture();
 });
 
 describe('display my notes view model', () => {
@@ -66,7 +48,7 @@ describe('display my notes view model', () => {
       result.current.refresh();
     });
     expect(result.current.notes).toMatchObject([
-      createNoteView({
+      noteViewModelFixture.createNoteView({
         content: 'appeller ma soeur',
         time: '17:41',
         id: 'note-idx',
@@ -103,7 +85,7 @@ describe('display my notes view model', () => {
       }
     });
     expect(result.current.notes).toMatchObject([
-      createNoteView({
+      noteViewModelFixture.createNoteView({
         authorId: 'bob-id',
         content: 'appeler les impots',
         id: 'note-id1',

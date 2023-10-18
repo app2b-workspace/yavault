@@ -17,6 +17,7 @@ import {Provider} from 'react-redux';
 import {RefreshFolderScreen} from './screens/notes/refresh-folder.screen';
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
 import {DependenciesContext} from './context/dependencies.context';
+import {NanoidGenerator} from './lib/notes/adapters/nanoid-generator.adapter';
 
 const dependencies: Dependencies = {
   dateProvider: new NativeDateProvider(),
@@ -46,6 +47,7 @@ const dependencies: Dependencies = {
     {timeoutMax: 800},
   ),
   noteGateway: new FakeNoteGatewayAdapter(),
+  idGenerator: new NanoidGenerator(),
 };
 
 const store = createStore({
