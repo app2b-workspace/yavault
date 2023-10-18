@@ -22,16 +22,15 @@ export interface NoteViewModel {
   complete(): Promise<unknown>;
 }
 
-interface NotesByFolderViewModel {
+export interface RefreshFolderViewModel {
   notes: NoteViewModel[];
   isLoading: boolean;
   refresh(): Promise<unknown>;
 }
-export type NotesByFolderDependencies = Pick<Dependencies, 'dateProvider'>;
-export const useNotesByFolderViewModel = (
+export const useRefreshFolderViewModel = (
   folderId: string,
-  {dateProvider}: NotesByFolderDependencies,
-): NotesByFolderViewModel => {
+  {dateProvider}: Pick<Dependencies, 'dateProvider'>,
+): RefreshFolderViewModel => {
   const notes = useSelector((state: RootState) =>
     selectNotesByFolder(state, folderId),
   );

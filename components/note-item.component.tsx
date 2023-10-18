@@ -1,6 +1,7 @@
 import React from 'react';
 import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import {hexToRGBA} from '../lib/common/hexa.utils';
 interface Props {
   hasCompleted: boolean;
   content: string;
@@ -9,7 +10,7 @@ interface Props {
 }
 export const NoteItem = ({hasCompleted, content, time, complete}: Props) => {
   return (
-    <View style={[styles.container, styles.shadow]}>
+    <View style={[styles.container]}>
       <View style={styles.noteContent}>
         <Text
           style={[
@@ -45,8 +46,11 @@ const styles = StyleSheet.create({
     backgroundColor: '#ffffff',
     flexDirection: 'row',
     justifyContent: 'space-between',
+    alignItems: 'center',
     padding: 8,
-    marginVertical: 8,
+    marginBottom: 4,
+    borderBottomWidth: 1,
+    borderBottomColor: hexToRGBA('#7A7A7A', 0.2),
   },
   shadow: {
     shadowColor: '#000',

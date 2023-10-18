@@ -14,7 +14,7 @@ import {InMemoryFolderGatewayAdapter} from './lib/notes/adapters/inmemory-folder
 import {FakeNoteGatewayAdapter} from './lib/notes/adapters/fake-note-gateway.adapter';
 import {StateBuilder} from './lib/store/state.builder';
 import {Provider} from 'react-redux';
-import {NotesByFolderScreen} from './screens/notes/notes-by-folder.screen';
+import {RefreshFolderScreen} from './screens/notes/refresh-folder.screen';
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
 import {DependenciesContext} from './context/dependencies.context';
 
@@ -59,7 +59,7 @@ function App(): JSX.Element {
       <Provider store={store}>
         <StatusBar />
         <DependenciesContext.Provider value={dependencies}>
-          <NotesByFolderScreen currentFolderId="inbox-id" />
+          <RefreshFolderScreen currentFolderId="inbox-id" />
         </DependenciesContext.Provider>
       </Provider>
     </GestureHandlerRootView>

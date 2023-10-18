@@ -1,19 +1,19 @@
-import React from 'react';
 import {PublishingStatus} from '../../../lib/notes/models/note.model';
 import {aState} from '../../../lib/store/state.builder';
 import {
   NoteViewModel,
-  NotesByFolderDependencies,
-  useNotesByFolderViewModel,
-} from '../notes-by-folder.viewmodel';
-import {renderHook} from '@testing-library/react-native';
-import {Provider} from 'react-redux';
+  RefreshFolderViewModel,
+  useRefreshFolderViewModel,
+} from '../refresh-folder.viewmodel';
 import {createTestStore} from '../../../lib/store/create-test.store';
-import {Store} from '../../../lib/store/create.store';
 import {FakeFolderGatewayAdapter} from '../../../lib/notes/adapters/fake-folder-gateway.adapter';
 import {act} from 'react-test-renderer';
 import {aNote} from '../../../lib/notes/models/node.builder';
 import {FakeDateProviderAdapter} from '../../../lib/notes/adapters/fake-date-provider.adapter';
+import {
+  renderViewModelHook,
+  wrapperWithReduxStore,
+} from '../../../components/__tests__/viewmodel.fixture';
 
 const createNoteView = ({
   authorId,
@@ -31,21 +31,6 @@ const createNoteView = ({
   id,
   time,
 });
-
-const wrapperWithStore =
-  (store: Store) =>
-  ({children}: {children: React.ReactNode}) =>
-    <Provider store={store}>{children}</Provider>;
-
-const renderViewModelHook = (
-  folderId: string,
-  dependencies: NotesByFolderDependencies,
-  wrapper: any,
-) => {
-  return renderHook(() => useNotesByFolderViewModel(folderId, dependencies), {
-    wrapper,
-  });
-};
 
 let folderGateway: FakeFolderGatewayAdapter;
 let dateProvider: FakeDateProviderAdapter;
@@ -72,8 +57,11 @@ describe('display my notes view model', () => {
       aState().withFolder({id: 'inbox-id', name: 'INBOW'}).build(),
       {folderGateway, dateProvider},
     );
-    const wrapper = wrapperWithStore(store);
-    const {result} = renderViewModelHook('inbox-id', {dateProvider}, wrapper);
+    const wrapper = wrapperWithReduxStore(store);
+    const {result} = renderViewModelHook(
+      () => useRefreshFolderViewModel('inbox-id', {dateProvider}),
+      wrapper,
+    );
     await act(() => {
       result.current.refresh();
     });
@@ -103,8 +91,11 @@ describe('display my notes view model', () => {
         .build(),
       {folderGateway, dateProvider},
     );
-    const wrapper = wrapperWithStore(store);
-    const {result} = renderViewModelHook('inbox-id', {dateProvider}, wrapper);
+    const wrapper = wrapperWithReduxStore(store);
+    const {result} = renderViewModelHook(
+      () => useRefreshFolderViewModel('inbox-id', {dateProvider}),
+      wrapper,
+    );
     await act(async () => {
       const noteVm = result.current.notes.find(nvm => nvm.id === 'note-id1');
       if (noteVm) {

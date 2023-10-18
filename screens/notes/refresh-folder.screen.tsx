@@ -5,7 +5,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import {useNotesByFolderViewModel} from './notes-by-folder.viewmodel';
+import {useRefreshFolderViewModel} from './refresh-folder.viewmodel';
 import {StyleSheet, View} from 'react-native';
 import {NoteList} from '../../components/note-list.component';
 import {Header} from '../../components/header.component';
@@ -19,11 +19,11 @@ interface Props {
   currentFolderId: string;
 }
 
-export const NotesByFolderScreen = ({currentFolderId}: Props) => {
+export const RefreshFolderScreen = ({currentFolderId}: Props) => {
   const submitFormRef = useRef<SubmitNoteFormMethods>(null);
 
   const dependencies = useContext(DependenciesContext);
-  const viewModel = useNotesByFolderViewModel(currentFolderId, dependencies);
+  const viewModel = useRefreshFolderViewModel(currentFolderId, dependencies);
   useEffect(() => {
     viewModel.refresh();
     // eslint-disable-next-line react-hooks/exhaustive-deps
