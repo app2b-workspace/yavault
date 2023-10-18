@@ -9,7 +9,7 @@ interface Props {
 }
 export const NoteItem = ({hasCompleted, content, time, complete}: Props) => {
   return (
-    <View style={styles.noteItem}>
+    <View style={[styles.container, styles.shadow]}>
       <View style={styles.noteContent}>
         <Text
           style={[
@@ -31,9 +31,9 @@ export const NoteItem = ({hasCompleted, content, time, complete}: Props) => {
         disabled={hasCompleted}
         style={styles.completeButton}>
         {hasCompleted ? (
-          <Icon name="check-circle" size={20} color="#34c759" />
+          <Icon name="check-circle" size={20} color={'#b56d3f'} />
         ) : (
-          <Icon name="circle-thin" size={20} color="#888888" />
+          <Icon name="circle-thin" size={20} color={'#b56d3f'} />
         )}
       </TouchableOpacity>
     </View>
@@ -41,7 +41,24 @@ export const NoteItem = ({hasCompleted, content, time, complete}: Props) => {
 };
 
 const styles = StyleSheet.create({
-  container: {flex: 1, padding: 16, backgroundColor: '#f2f2f2'},
+  container: {
+    backgroundColor: '#ffffff',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    padding: 8,
+    marginVertical: 8,
+  },
+  shadow: {
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.18,
+    shadowRadius: 1.0,
+
+    elevation: 1,
+  },
   noteContent: {},
   noteCompleted: {
     textDecorationLine: 'line-through',
@@ -50,23 +67,15 @@ const styles = StyleSheet.create({
   content: {
     fontSize: 14,
     marginBottom: 4,
-    color: '#555555',
+    color: 'black',
+    fontWeight: 'bold',
   },
   time: {
     fontSize: 12,
-    color: '#888888',
+    color: 'black',
   },
-  noteItem: {
-    backgroundColor: '#ffffff',
-    borderRadius: 8,
-    marginBottom: 12,
-    padding: 16,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  completeButton: {
-    padding: 10,
-  },
+
+  completeButton: {},
   completeNoteButtonText: {
     color: '#fff',
     textAlign: 'center',

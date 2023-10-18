@@ -3,10 +3,15 @@ import {
   selectNotesByFolder,
 } from '../../lib/notes/slices/folder.slice';
 import {refreshFolder} from '../../lib/notes/usecases/refresh-folder.usecase';
-import {AppDispatch, RootState} from '../../lib/store/create.store';
+import {
+  AppDispatch,
+  Dependencies,
+  RootState,
+} from '../../lib/store/create.store';
 import {useDispatch, useSelector} from 'react-redux';
 import {completeNote} from '../../lib/notes/usecases/complete-a-note.usecase';
 import {PublishingStatus} from '../../lib/notes/models/note.model';
+import {readableDate} from '../../lib/common/date.utils';
 
 export interface NoteViewModel {
   id: string;
@@ -22,9 +27,10 @@ interface NotesByFolderViewModel {
   isLoading: boolean;
   refresh(): Promise<unknown>;
 }
-
+export type NotesByFolderDependencies = Pick<Dependencies, 'dateProvider'>;
 export const useNotesByFolderViewModel = (
   folderId: string,
+  {dateProvider}: NotesByFolderDependencies,
 ): NotesByFolderViewModel => {
   const notes = useSelector((state: RootState) =>
     selectNotesByFolder(state, folderId),
@@ -34,13 +40,14 @@ export const useNotesByFolderViewModel = (
   );
 
   const dispatch = useDispatch<AppDispatch>();
+  const now = dateProvider.now();
 
   return {
     notes: notes.map(note => ({
       id: note.id,
       content: note.content,
       authorId: note.authorId,
-      time: note.time,
+      time: readableDate(new Date(now), new Date(note.time)),
       complete: () => dispatch(completeNote({folderId, noteId: note.id})),
       hasCompleted: () => note.status === PublishingStatus.Completed,
     })),
