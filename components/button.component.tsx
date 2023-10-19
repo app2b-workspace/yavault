@@ -3,11 +3,19 @@ import {StyleSheet, Text} from 'react-native';
 import {TouchableOpacity} from 'react-native';
 interface Props {
   label: string;
+  disabled: boolean;
+  onPress: () => void;
 }
-export const Button = ({label}: Props) => {
+export const Button = ({disabled, label, onPress}: Props) => {
   return (
-    <TouchableOpacity style={[styles.submitNoteContent, styles.submitShadow]}>
-      <Text style={styles.submitNoteLabel}>{label}</Text>
+    <TouchableOpacity
+      disabled={disabled}
+      style={[styles.submitNoteContent, styles.submitShadow]}
+      onPress={onPress}>
+      <Text
+        style={[styles.submitNoteLabel, !disabled ? styles.bold : undefined]}>
+        {label}
+      </Text>
     </TouchableOpacity>
   );
 };
@@ -22,6 +30,9 @@ const styles = StyleSheet.create({
   },
   submitNoteLabel: {
     color: 'white',
+  },
+  bold: {
+    fontWeight: 'bold',
   },
   submitShadow: {
     shadowColor: '#000',
