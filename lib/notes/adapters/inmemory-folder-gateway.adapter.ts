@@ -1,9 +1,9 @@
 import {
   FolderGateway,
-  NoteResponse,
   RefreshFolderRequest,
   RefreshFolderResponse,
 } from '../models/folder.gateway';
+import {Note} from '../models/note.model';
 
 interface Options {
   timeoutMax: number;
@@ -11,7 +11,7 @@ interface Options {
 
 export class InMemoryFolderGatewayAdapter implements FolderGateway {
   constructor(
-    private responsesByFolder: Record<string, NoteResponse[]>,
+    private notesByFolder: Record<string, Note[]>,
     private options: Options,
   ) {}
   refresh(request: RefreshFolderRequest): Promise<RefreshFolderResponse> {
@@ -19,7 +19,7 @@ export class InMemoryFolderGatewayAdapter implements FolderGateway {
       setTimeout(() => {
         resolve({
           folderId: request.folderId,
-          notes: this.responsesByFolder[request.folderId] || [],
+          notes: this.notesByFolder[request.folderId] || [],
         });
       }, this.options.timeoutMax);
     });

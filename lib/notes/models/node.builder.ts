@@ -22,6 +22,9 @@ class NoteBuilder {
     this.status = status;
     return this;
   }
+  withCompletedStatus(): NoteBuilder {
+    return this.withStatus(PublishingStatus.Completed);
+  }
   build(): Note {
     return {
       id: this.noteId,

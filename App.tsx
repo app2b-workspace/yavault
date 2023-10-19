@@ -11,42 +11,44 @@ import {StatusBar} from 'react-native';
 import {Dependencies, createStore} from './lib/store/create.store';
 import {NativeDateProvider} from './lib/notes/adapters/date-now-provider.adapter';
 import {InMemoryFolderGatewayAdapter} from './lib/notes/adapters/inmemory-folder-gateway.adapter';
-import {FakeNoteGatewayAdapter} from './lib/notes/adapters/fake-note-gateway.adapter';
 import {StateBuilder} from './lib/store/state.builder';
 import {Provider} from 'react-redux';
 import {RefreshFolderScreen} from './screens/notes/refresh-folder.screen';
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
 import {DependenciesContext} from './context/dependencies.context';
 import {NanoidGenerator} from './lib/notes/adapters/nanoid-generator.adapter';
-
+import {aNote} from './lib/notes/models/node.builder';
+import {InMemoryNoteGatewayAdapter} from './lib/notes/adapters/inmemory-note-gateway.adapter';
+import {Note} from './lib/notes/models/note.model';
+const notes = [
+  aNote('note-id1')
+    .withAuthorId('audie-id')
+    .withContent('Un message au hasard')
+    .withCompletedStatus()
+    .withTime(new Date('2023-10-10T14:38:12.890Z'))
+    .build(),
+  aNote('note-id2')
+    .withAuthorId('audie-id')
+    .withContent('Appeler la crèche')
+    .withCompletedStatus()
+    .withTime(new Date('2023-10-10T13:38:12.890Z'))
+    .build(),
+];
 const dependencies: Dependencies = {
   dateProvider: new NativeDateProvider(),
   folderGateway: new InMemoryFolderGatewayAdapter(
     {
-      ['inbox-id']: [
-        {
-          authorId: 'audie-id',
-          content: 'Un message au hasard',
-          id: 'note-id1',
-          time: '2023-10-10T14:38:12.890Z',
-        },
-        {
-          authorId: 'audie-id',
-          content: 'Appeler la crèche',
-          id: 'note-id2',
-          time: '2023-10-10T13:38:12.890Z',
-        },
-        {
-          authorId: 'audie-id',
-          content: 'Appeler le ski',
-          id: 'note-id2',
-          time: '2023-10-10T12:38:12.890Z',
-        },
-      ],
+      ['inbox-id']: notes,
     },
     {timeoutMax: 800},
   ),
-  noteGateway: new FakeNoteGatewayAdapter(),
+  noteGateway: new InMemoryNoteGatewayAdapter(
+    notes.reduce((acc: Record<string, Note>, current: Note) => {
+      acc[current.id] = current;
+      return acc;
+    }, {}),
+    {timeoutMax: 800},
+  ),
   idGenerator: new NanoidGenerator(),
 };
 
