@@ -16,7 +16,6 @@ import {StyleSheet, View} from 'react-native';
 import {Button} from './button.component';
 import {useSubmitNoteViewModel} from './submit-note.viewmodel';
 import {DependenciesContext} from '../context/dependencies.context';
-import {TextInput} from 'react-native';
 
 interface Props {
   folderId: string;
@@ -39,7 +38,6 @@ export const SubmitNoteForm = forwardRef(
     const dependencies = useContext(DependenciesContext);
     const viewModel = useSubmitNoteViewModel(folderId, dependencies);
     const bottomSheetRef = useRef<BottomSheet>(null);
-    const contentInputRef = useRef<BottomSheetTextInput>(null);
     const snapPoints = useMemo(() => ['25%', '80%'], []);
     const [index, setIndex] = useState<number>(CLOSED_INDEX);
 
@@ -63,11 +61,9 @@ export const SubmitNoteForm = forwardRef(
       };
     });
     const submit = useCallback(() => {
-      return viewModel.submit()?.finally(() => {
-        contentInputRef.current?.clear();
-        bottomSheetRef.current?.close();
-      });
-    }, [viewModel, contentInputRef]);
+      viewModel.submit()?.then(() => bottomSheetRef.current?.close());
+      bottomSheetRef.current?.close();
+    }, [viewModel]);
 
     return (
       <BottomSheet
@@ -83,10 +79,10 @@ export const SubmitNoteForm = forwardRef(
         snapPoints={snapPoints}>
         <View style={styles.bottomSheetInputContent}>
           <BottomSheetTextInput
-            ref={contentInputRef}
             style={styles.input}
             placeholder={noteContentPlaceholder}
             maxLength={40}
+            value={viewModel.content}
             placeholderTextColor={'#C38A65'}
             onChangeText={(content: string) => viewModel.newContent(content)}
           />

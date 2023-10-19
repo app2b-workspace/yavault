@@ -20,6 +20,8 @@ import {NanoidGenerator} from './lib/notes/adapters/nanoid-generator.adapter';
 import {aNote} from './lib/notes/models/node.builder';
 import {InMemoryNoteGatewayAdapter} from './lib/notes/adapters/inmemory-note-gateway.adapter';
 import {Note} from './lib/notes/models/note.model';
+import {StyleSheet} from 'react-native';
+import {Folder} from './lib/notes/models/folder.model';
 const notes = [
   aNote('note-id1')
     .withAuthorId('audie-id')
@@ -34,11 +36,16 @@ const notes = [
     .withTime(new Date('2023-10-10T13:38:12.890Z'))
     .build(),
 ];
+const inbox: Folder = {
+  id: 'inbox-id',
+  name: 'INBOW',
+  notes: notes.map(n => n.id),
+};
 const dependencies: Dependencies = {
   dateProvider: new NativeDateProvider(),
   folderGateway: new InMemoryFolderGatewayAdapter(
     {
-      ['inbox-id']: notes,
+      [inbox.id]: notes,
     },
     {timeoutMax: 800},
   ),
@@ -53,13 +60,13 @@ const dependencies: Dependencies = {
 };
 
 const store = createStore({
-  state: new StateBuilder().withFolder({id: 'inbox-id', name: 'INBOX'}).build(),
+  state: new StateBuilder().withFolder(inbox).build(),
   dependencies,
 });
 
 function App(): JSX.Element {
   return (
-    <GestureHandlerRootView style={{flex: 1}}>
+    <GestureHandlerRootView style={styles.container}>
       <Provider store={store}>
         <StatusBar />
         <DependenciesContext.Provider value={dependencies}>
@@ -69,5 +76,9 @@ function App(): JSX.Element {
     </GestureHandlerRootView>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {flex: 1},
+});
 
 export default App;

@@ -2,21 +2,29 @@ import {renderViewModelHook, wrapperWithReduxStore} from './viewmodel.fixture';
 import {FakeIdGeneratorAdapter} from '../../lib/notes/adapters/fake-id-generator.adapter';
 import {submitNote} from '../../lib/notes/usecases/submit-a-note.usecase';
 import {createTestStore} from '../../lib/store/create-test.store';
-import {Store} from '../../lib/store/create.store';
+import {Dependencies, Store} from '../../lib/store/create.store';
 import {aState} from '../../lib/store/state.builder';
 import {
   SubmitNoteFormDependencies,
   useSubmitNoteViewModel,
 } from '../submit-note.viewmodel';
 import {act} from 'react-test-renderer';
+import {FakeAsyncNoteGatewayAdapter} from '../../lib/notes/adapters/fake-async-note-gateway.adapter';
+import {FakeNoteGatewayAdapter} from '../../lib/notes/adapters/fake-note-gateway.adapter';
 
 let idGenerator: FakeIdGeneratorAdapter;
 beforeEach(() => {
   idGenerator = new FakeIdGeneratorAdapter();
 });
-const createStore = (folderId: string = 'inbox-id') => {
+const createStore = (
+  {noteGateway}: Partial<Dependencies> = {
+    noteGateway: new FakeNoteGatewayAdapter(),
+  },
+  folderId: string = 'inbox-id',
+) => {
   return createTestStore(
     aState().withFolder({id: folderId, name: 'INBOW'}).build(),
+    {noteGateway},
   );
 };
 const renderViewModel = (
@@ -45,7 +53,6 @@ describe('submit a note view model', () => {
       folderId: 'inbox-id',
       noteId: 'note-id1',
     });
-    expect(hookOutput.result.current.canSubmit).toBe(true);
   });
   test('Example: cannot submit by default', async () => {
     idGenerator.willGeneratorNewId = 'note-id1';

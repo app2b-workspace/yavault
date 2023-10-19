@@ -17,6 +17,7 @@ export interface Dependencies {
   folderGateway: FolderGateway;
   idGenerator: IdGenerator;
 }
+
 export const initialState = rootReducer(undefined, createAction(''));
 export type RootState = typeof initialState;
 
@@ -28,6 +29,7 @@ export const createStore = ({
   dependencies: Dependencies;
 }) => {
   let lastUseCaseAction: AnyAction;
+  let countDispatchedUseCasesActions = 0;
   const logLastUseCaseActionsMiddleware: Middleware =
     () => next => (action: AnyAction) => {
       if (
@@ -35,6 +37,7 @@ export const createStore = ({
         (action.type as string).startsWith('usecase') &&
         (action.type as string).endsWith('pending')
       ) {
+        countDispatchedUseCasesActions++;
         lastUseCaseAction = action;
       }
       return next(action);
@@ -53,6 +56,9 @@ export const createStore = ({
     ...store,
     getLastUseCaseAction() {
       return lastUseCaseAction;
+    },
+    getCountDispatchedUseCasesActions() {
+      return countDispatchedUseCasesActions;
     },
   };
 };

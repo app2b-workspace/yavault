@@ -1,9 +1,10 @@
 import {useDispatch} from 'react-redux';
 import {submitNote} from '../lib/notes/usecases/submit-a-note.usecase';
 import {AppDispatch, Dependencies} from '../lib/store/create.store';
-import {useCallback, useState} from 'react';
-import {isDefinedOrNotNullGuard} from '../lib/common/is-defined-or-not-null.guard';
+import {useCallback, useEffect, useState} from 'react';
+import {isNotEmptyStringGuard} from '../lib/common/is-string-defined.guard';
 
+const EMPTY_STRING = '';
 export type SubmitNoteFormDependencies = Pick<Dependencies, 'idGenerator'>;
 export const useSubmitNoteViewModel = (
   folderId: string,
@@ -16,16 +17,23 @@ export const useSubmitNoteViewModel = (
     if (!canSubmit) {
       return;
     }
+    setCanSubmit(false);
     return dispatch(
       submitNote({content, noteId: idGenerator.generate(), folderId}),
-    );
+    ).finally(() => {
+      changeContent(EMPTY_STRING);
+    });
   }, [canSubmit, content, dispatch, folderId, idGenerator]);
+
+  useEffect(() => {
+    setCanSubmit(isNotEmptyStringGuard(content));
+  }, [content]);
   return {
     newContent(value: string) {
       changeContent(value);
-      setCanSubmit(isDefinedOrNotNullGuard(value) && value.trim().length > 0);
     },
     submit,
     canSubmit,
+    content,
   };
 };
